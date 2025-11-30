@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a1628">
+    <meta name="description" content="WSQK The Squawk - A Stranger Things Radio Station">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="WSQK">
+    <title>WSQK - The Squawk</title>
+    
+    <link rel="manifest" id="manifest-placeholder">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%230a1628'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial Black' font-size='48' fill='%23ff0000' dominant-baseline='middle' text-anchor='middle' font-weight='bold'%3EWSQK%3C/text%3E%3C/svg%3E">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --neon-red: #ff0033;
+            --neon-blue: #00d4ff;
+            --electric-yellow: #ffed4e;
+            --dark-blue: #0a1628;
+            --darker-blue: #050b14;
+            --grid-color: rgba(0, 212, 255, 0.3);
+        }
+
+        body {
+            font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+            background: var(--darker-blue);
+            color: white;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated 80s grid background */
+        .retro-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(var(--darker-blue) 0%, var(--dark-blue) 50%, #1a0a28 100%);
+            perspective: 500px;
+            overflow: hidden;
+        }
+
+        .grid-lines {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 48px, var(--grid-color) 48px, var(--grid-color) 50px),
+                repeating-linear-gradient(90deg, transparent, transparent 48px, var(--grid-color) 48px, var(--grid-color) 50px);
+            transform: rotateX(60deg) translateY(-50%);
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: rotateX(60deg) translateY(-50%) translateZ(0); }
+            100% { transform: rotateX(60deg) translateY(-50%) translateZ(100px); }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            animation: float 15s infinite;
+            opacity: 0;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        @keyframes float {
+            0%, 100% { opacity: 0; transform: translateY(100vh) translateX(0); }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) translateX(100px); }
+        }
+
+        /* Main container */
+        .app-container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        /* Logo section */
+        .logo-section {
+            text-align: center;
+            margin: 2rem auto;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .station-label {
+            font-size: clamp(0.8rem, 3vw, 1rem);
+            letter-spacing: 0.3em;
+            color: var(--electric-yellow);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(255, 237, 78, 0.8);
+        }
+
+        .wsqk-logo {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 51, 0.6));
+            margin: 1rem 0;
+        }
+
+        .squawk-text {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-style: italic;
+            color: white;
+            text-shadow: 
+                2px 2px 0 var(--neon-red),
+                0 0 20px rgba(255, 0, 51, 0.8);
+            margin-top: 0.5rem;
+        }
+
+        /* Player card */
+        .player-card {
+            background: rgba(10, 22, 40, 0.85);
+            border: 3px solid var(--neon-red);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+            box-shadow: 
+                0 0 30px rgba(255, 0, 51, 0.4),
+                inset 0 0 30px rgba(0, 212, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(0, 212, 255, 0.03) 10px,
+                rgba(0, 212, 255, 0.03) 20px
+            );
+            animation: scanlines 10s linear infinite;
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+
+        /* Vinyl record animation */
+        .vinyl-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .vinyl {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at center, #1a1a1a 0%, #1a1a1a 25%, #0a0a0a 25%, #0a0a0a 100%);
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .vinyl::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: var(--neon-red);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 20px var(--neon-red),
+                inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .vinyl::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: var(--darker-blue);
+            border-radius: 50%;
+        }
+
+        .vinyl.spinning {
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .vinyl-grooves {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            background: repeating-radial-gradient(
+                circle at center,
+                transparent,
+                transparent 4px,
+                rgba(255, 255, 255, 0.1) 4px,
+                rgba(255, 255, 255, 0.1) 5px
+            );
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .play-button {
+            width: 100px;
+            height: 100px;
+            border: 4px solid var(--neon-red);
+            background: var(--darker-blue);
+            border-radius: 50%;
+            color: var(--neon-red);
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 51, 0.4),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-button:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                0 0 40px rgba(255, 0, 51, 0.8),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .play-button:active {
+            transform: scale(0.95);
+        }
+
+        .play-button.playing {
+            background: var(--neon-red);
+            color: var(--darker-blue);
+            box-shadow: 
+                0 0 40px rgba(255, 0, 51, 0.9),
+                0 0 60px rgba(255, 0, 51, 0.6);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(255, 0, 51, 0.9), 0 0 60px rgba(255, 0, 51, 0.6); }
+            50% { box-shadow: 0 0 60px rgba(255, 0, 51, 1), 0 0 80px rgba(255, 0, 51, 0.8); }
+        }
+
+        /* Volume control */
+        .volume-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .volume-icon {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 5px var(--neon-blue));
+        }
+
+        .volume-slider {
+            width: 200px;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            border-radius: 4px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--neon-red);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 
+                0 0 15px var(--neon-red),
+                0 0 30px rgba(255, 0, 51, 0.5);
+            border: 2px solid var(--darker-blue);
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: var(--neon-red);
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid var(--darker-blue);
+            box-shadow: 
+                0 0 15px var(--neon-red),
+                0 0 30px rgba(255, 0, 51, 0.5);
+        }
+
+        /* Status */
+        .status {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--electric-yellow);
+            text-shadow: 0 0 10px rgba(255, 237, 78, 0.6);
+            min-height: 2rem;
+            letter-spacing: 0.15em;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Loading effect */
+        .status-loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--electric-yellow);
+            border-radius: 50%;
+            margin-left: 0.5rem;
+            animation: blink 1s infinite;
+            box-shadow: 0 0 10px var(--electric-yellow);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Error/Offline pages */
+        .error-page, .offline-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: var(--darker-blue);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .error-page.active, .offline-page.active {
+            display: flex;
+        }
+
+        .error-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 20px var(--neon-red));
+            animation: flicker 2s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .error-title {
+            font-size: clamp(2rem, 6vw, 3rem);
+            color: var(--neon-red);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(255, 0, 51, 0.8);
+        }
+
+        .error-message {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            color: white;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .retry-button {
+            background: var(--neon-red);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.5rem;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px rgba(255, 0, 51, 0.6);
+        }
+
+        .retry-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(255, 0, 51, 0.9);
+        }
+
+        .retry-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Install prompt */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--neon-red);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 10px 40px rgba(255, 0, 51, 0.6);
+            z-index: 1000;
+            max-width: 90%;
+            font-size: 1rem;
+        }
+
+        .install-prompt.show {
+            display: flex;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .install-button, .dismiss-button {
+            background: white;
+            color: var(--neon-red);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            transition: all 0.2s ease;
+        }
+
+        .install-button:hover, .dismiss-button:hover {
+            transform: scale(1.05);
+        }
+
+        .dismiss-button {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        /* Mobile optimization */
+        @media (max-width: 600px) {
+            .app-container {
+                padding: 0.5rem;
+            }
+
+            .player-card {
+                padding: 1.5rem;
+                margin-top: 1rem;
+            }
+
+            .vinyl-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .play-button {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+
+            .controls {
+                gap: 1rem;
+            }
+
+            .volume-slider {
+                width: 150px;
+            }
+
+            .install-prompt {
+                flex-direction: column;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .logo-section {
+                margin: 1rem auto;
+            }
+
+            .vinyl-container {
+                width: 120px;
+                height: 120px;
+                margin-bottom: 1rem;
+            }
+
+            .controls {
+                margin: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="retro-grid">
+        <div class="grid-lines"></div>
+    </div>
+
+    <!-- Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Main App -->
+    <div class="app-container" id="mainApp">
+        <!-- Logo -->
+        <div class="logo-section">
+            <div class="station-label">A STRANGER THINGS RADIO STATION</div>
+            <svg class="wsqk-logo" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background stripes -->
+                <rect width="800" height="300" fill="#0a1628"/>
+                <rect y="60" width="800" height="8" fill="#ffed4e"/>
+                <rect y="75" width="800" height="8" fill="white"/>
+                <rect y="220" width="800" height="8" fill="white"/>
+                <rect y="235" width="800" height="8" fill="#ffed4e"/>
+                
+                <!-- WSQK text with 80s style -->
+                <defs>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <text x="400" y="170" font-family="Arial Black, sans-serif" font-size="140" font-weight="900" fill="#ff0033" text-anchor="middle" filter="url(#glow)" stroke="#1a0000" stroke-width="4">WSQK</text>
+            </svg>
+            <div class="squawk-text">The Squawk</div>
+        </div>
+
+        <!-- Player -->
+        <div class="player-card">
+            <!-- Vinyl record -->
+            <div class="vinyl-container">
+                <div class="vinyl" id="vinyl">
+                    <div class="vinyl-grooves"></div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="play-button" id="playButton" aria-label="Play/Pause">
+                    <span id="playIcon">▶</span>
+                </button>
+            </div>
+
+            <!-- Volume -->
+            <div class="volume-section">
+                <span class="volume-icon">🔊</span>
+                <input type="range" min="0" max="100" value="70" class="volume-slider" id="volumeSlider" aria-label="Volume">
+            </div>
+
+            <!-- Status -->
+            <div class="status" id="status">READY TO TRANSMIT</div>
+        </div>
+    </div>
+
+    <!-- Error Page -->
+    <div class="error-page" id="errorPage">
+        <div class="error-icon">📻</div>
+        <h1 class="error-title">TRANSMISSION LOST</h1>
+        <p class="error-message">Cannot connect to the station.<br>Check your connection and try again.</p>
+        <button class="retry-button" onclick="retryConnection()">RETRY</button>
+    </div>
+
+    <!-- Offline Page -->
+    <div class="offline-page" id="offlinePage">
+        <div class="error-icon">📡</div>
+        <h1 class="error-title">NO SIGNAL</h1>
+        <p class="error-message">You're offline.<br>Connect to the internet to tune in.</p>
+        <button class="retry-button" onclick="checkConnection()">CHECK CONNECTION</button>
+    </div>
+
+    <!-- Install Prompt -->
+    <div class="install-prompt" id="installPrompt">
+        <span>Install WSQK on your device?</span>
+        <button class="install-button" id="installButton">INSTALL</button>
+        <button class="dismiss-button" id="dismissButton">LATER</button>
+    </div>
+
+    <script>
+        // Generate manifest
+        const manifestData = {
+            name: "WSQK The Squawk",
+            short_name: "WSQK",
+            description: "A Stranger Things Radio Station",
+            start_url: "./",
+            display: "standalone",
+            background_color: "#0a1628",
+            theme_color: "#0a1628",
+            orientation: "portrait",
+            icons: [
+                {
+                    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%230a1628'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial Black' font-size='48' fill='%23ff0000' dominant-baseline='middle' text-anchor='middle' font-weight='bold'%3EWSQK%3C/text%3E%3C/svg%3E",
+                    sizes: "192x192",
+                    type: "image/svg+xml",
+                    purpose: "any maskable"
+                },
+                {
+                    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230a1628'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial Black' font-size='140' fill='%23ff0000' dominant-baseline='middle' text-anchor='middle' font-weight='bold'%3EWSQK%3C/text%3E%3C/svg%3E",
+                    sizes: "512x512",
+                    type: "image/svg+xml",
+                    purpose: "any maskable"
+                }
+            ]
+        };
+
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.getElementById('manifest-placeholder').setAttribute('href', manifestURL);
+
+        // Constants
+        const STREAM_URL = 'https://media-ssl.musicradio.com/WSQK';
+        
+        // Elements
+        const playButton = document.getElementById('playButton');
+        const playIcon = document.getElementById('playIcon');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const status = document.getElementById('status');
+        const vinyl = document.getElementById('vinyl');
+        const mainApp = document.getElementById('mainApp');
+        const errorPage = document.getElementById('errorPage');
+        const offlinePage = document.getElementById('offlinePage');
+        const installPrompt = document.getElementById('installPrompt');
+        const installButton = document.getElementById('installButton');
+        const dismissButton = document.getElementById('dismissButton');
+        const particles = document.getElementById('particles');
+
+        // Audio
+        let audio = null;
+        let isPlaying = false;
+        let deferredPrompt = null;
+
+        // Initialize
+        function init() {
+            createParticles();
+            setupAudio();
+            setupEventListeners();
+            checkOnlineStatus();
+        }
+
+        // Create floating particles
+        function createParticles() {
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                particles.appendChild(particle);
+            }
+        }
+
+        // Setup audio element
+        function setupAudio() {
+            audio = new Audio();
+            audio.crossOrigin = 'anonymous';
+            audio.preload = 'none';
+            audio.volume = volumeSlider.value / 100;
+
+            // Audio events
+            audio.addEventListener('playing', handlePlaying);
+            audio.addEventListener('pause', handlePause);
+            audio.addEventListener('ended', handlePause);
+            audio.addEventListener('error', handleError);
+            audio.addEventListener('waiting', () => {
+                if (isPlaying) {
+                    updateStatus('TUNING IN<span class="status-loading"></span>');
+                }
+            });
+            audio.addEventListener('canplay', () => {
+                if (isPlaying) {
+                    updateStatus('ON AIR');
+                }
+            });
+
+            // Media Session API
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: 'WSQK The Squawk',
+                    artist: 'Stranger Things Radio',
+                    album: 'Live Stream',
+                    artwork: [
+                        { 
+                            src: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"%3E%3Crect width="512" height="512" fill="%230a1628"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial Black" font-size="140" fill="%23ff0000" dominant-baseline="middle" text-anchor="middle" font-weight="bold"%3EWSQK%3C/text%3E%3C/svg%3E',
+                            sizes: '512x512',
+                            type: 'image/svg+xml'
+                        }
+                    ]
+                });
+
+                navigator.mediaSession.setActionHandler('play', () => play());
+                navigator.mediaSession.setActionHandler('pause', () => pause());
+                navigator.mediaSession.setActionHandler('stop', () => pause());
+            }
+        }
+
+        // Event listeners
+        function setupEventListeners() {
+            playButton.addEventListener('click', togglePlay);
+            volumeSlider.addEventListener('input', handleVolumeChange);
+            
+            // PWA install
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                setTimeout(() => installPrompt.classList.add('show'), 3000);
+            });
+
+            installButton.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                    installPrompt.classList.remove('show');
+                }
+            });
+
+            dismissButton.addEventListener('click', () => {
+                installPrompt.classList.remove('show');
+            });
+
+            // Online/offline
+            window.addEventListener('online', checkConnection);
+            window.addEventListener('offline', () => {
+                if (isPlaying) {
+                    showOfflinePage();
+                }
+            });
+
+            // Keep playing in background
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && isPlaying && audio.paused) {
+                    audio.play().catch(err => console.log('Resume failed:', err));
+                }
+            });
+        }
+
+        // Toggle play/pause
+        function togglePlay() {
+            if (isPlaying) {
+                pause();
+            } else {
+                play();
+            }
+        }
+
+        // Play
+        function play() {
+            if (!navigator.onLine) {
+                showOfflinePage();
+                return;
+            }
+
+            // Set source with AAC type
+            if (!audio.src || audio.src !== STREAM_URL) {
+                audio.src = STREAM_URL;
+                audio.type = 'audio/aac';
+            }
+
+            updateStatus('CONNECTING<span class="status-loading"></span>');
+            
+            audio.load();
+            
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        console.log('Playback started');
+                    })
+                    .catch(error => {
+                        console.error('Play failed:', error);
+                        handleError(error);
+                    });
+            }
+        }
+
+        // Pause
+        function pause() {
+            audio.pause();
+            isPlaying = false;
+            playButton.classList.remove('playing');
+            playIcon.textContent = '▶';
+            vinyl.classList.remove('spinning');
+            updateStatus('PAUSED');
+        }
+
+        // Handle playing
+        function handlePlaying() {
+            isPlaying = true;
+            playButton.classList.add('playing');
+            playIcon.textContent = '⏸';
+            vinyl.classList.add('spinning');
+            updateStatus('ON AIR');
+        }
+
+        // Handle pause
+        function handlePause() {
+            isPlaying = false;
+            playButton.classList.remove('playing');
+            playIcon.textContent = '▶';
+            vinyl.classList.remove('spinning');
+        }
+
+        // Handle volume
+        function handleVolumeChange(e) {
+            if (audio) {
+                audio.volume = e.target.value / 100;
+            }
+        }
+
+        // Handle errors
+        function handleError(error) {
+            console.error('Audio error:', error);
+            
+            if (audio.error) {
+                console.log('Error code:', audio.error.code);
+                console.log('Error message:', audio.error.message);
+            }
+            
+            pause();
+            showErrorPage();
+        }
+
+        // Update status
+        function updateStatus(message) {
+            status.innerHTML = message;
+        }
+
+        // Show error page
+        function showErrorPage() {
+            mainApp.style.display = 'none';
+            errorPage.classList.add('active');
+            offlinePage.classList.remove('active');
+        }
+
+        // Show offline page
+        function showOfflinePage() {
+            mainApp.style.display = 'none';
+            offlinePage.classList.add('active');
+            errorPage.classList.remove('active');
+            pause();
+        }
+
+        // Show main app
+        function showMainApp() {
+            mainApp.style.display = 'flex';
+            errorPage.classList.remove('active');
+            offlinePage.classList.remove('active');
+        }
+
+        // Retry connection
+        function retryConnection() {
+            if (!navigator.onLine) {
+                showOfflinePage();
+                return;
+            }
+            showMainApp();
+            updateStatus('READY TO TRANSMIT');
+        }
+
+        // Check connection
+        function checkConnection() {
+            if (navigator.onLine) {
+                showMainApp();
+                updateStatus('BACK ONLINE - READY TO TRANSMIT');
+            } else {
+                showOfflinePage();
+            }
+        }
+
+        // Check online status
+        function checkOnlineStatus() {
+            if (!navigator.onLine) {
+                showOfflinePage();
+            }
+        }
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>
