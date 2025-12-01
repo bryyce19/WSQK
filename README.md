@@ -1,2 +1,2 @@
 # WSQK
-PWA app to access Stranger Things’ FM station WSQK: The Squawk
+PWA to access Stranger Things’ FM station WSQK: The Squawk
