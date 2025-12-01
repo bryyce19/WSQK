@@ -2,20 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0a1628">
-    <meta name="description" content="WSQK The Squawk - A Stranger Things Radio Station">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="WSQK">
-    <title>WSQK - The Squawk</title>
-    
-    <link rel="manifest" id="manifest-placeholder">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%230a1628'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial Black' font-size='48' fill='%23ff0000' dominant-baseline='middle' text-anchor='middle' font-weight='bold'%3EWSQK%3C/text%3E%3C/svg%3E">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>WSQK The Squawk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Bebas+Neue&display=swap" rel="stylesheet">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
@@ -23,56 +20,44 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        :root {
-            --neon-red: #ff0033;
-            --neon-blue: #00d4ff;
-            --electric-yellow: #ffed4e;
-            --dark-blue: #0a1628;
-            --darker-blue: #050b14;
-            --grid-color: rgba(0, 212, 255, 0.3);
-        }
-
         body {
-            font-family: 'Bebas Neue', 'Arial Black', sans-serif;
-            background: var(--darker-blue);
-            color: white;
+            font-family: 'Special Elite', 'Courier New', monospace;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
             min-height: 100vh;
-            overflow: hidden;
             position: relative;
         }
 
-        /* Animated 80s grid background */
-        .retro-grid {
+        /* Animated background */
+        .bg-layer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                linear-gradient(var(--darker-blue) 0%, var(--dark-blue) 50%, #1a0a28 100%);
-            perspective: 500px;
-            overflow: hidden;
+            z-index: 0;
+            background: radial-gradient(ellipse at center, #1a0000 0%, #000000 100%);
         }
 
-        .grid-lines {
-            position: absolute;
-            top: 50%;
+        .scanlines {
+            position: fixed;
+            top: 0;
             left: 0;
-            width: 200%;
-            height: 200%;
-            background-image: 
-                repeating-linear-gradient(0deg, transparent, transparent 48px, var(--grid-color) 48px, var(--grid-color) 50px),
-                repeating-linear-gradient(90deg, transparent, transparent 48px, var(--grid-color) 48px, var(--grid-color) 50px);
-            transform: rotateX(60deg) translateY(-50%);
-            animation: gridMove 20s linear infinite;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.1) 2px,
+                rgba(0, 0, 0, 0.1) 4px
+            );
+            opacity: 0.3;
         }
 
-        @keyframes gridMove {
-            0% { transform: rotateX(60deg) translateY(-50%) translateZ(0); }
-            100% { transform: rotateX(60deg) translateY(-50%) translateZ(100px); }
-        }
-
-        /* Floating particles */
         .particles {
             position: fixed;
             top: 0;
@@ -80,6 +65,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
+            z-index: 1;
             overflow: hidden;
         }
 
@@ -87,120 +73,125 @@
             position: absolute;
             width: 2px;
             height: 2px;
-            background: var(--neon-blue);
-            border-radius: 50%;
-            animation: float 15s infinite;
-            opacity: 0;
-            box-shadow: 0 0 10px var(--neon-blue);
+            background: rgba(180, 0, 0, 0.4);
+            animation: drift 25s infinite linear;
         }
 
-        @keyframes float {
-            0%, 100% { opacity: 0; transform: translateY(100vh) translateX(0); }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-10vh) translateX(100px); }
+        @keyframes drift {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
         }
 
-        /* Main container */
-        .app-container {
+        .container {
             position: relative;
-            z-index: 10;
+            z-index: 2;
+            max-width: 100%;
             min-height: 100vh;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            padding: 1rem;
         }
 
-        /* Logo section */
-        .logo-section {
+        /* Header */
+        .header {
+            padding: 60px 20px 40px;
             text-align: center;
-            margin: 2rem auto;
-            max-width: 600px;
-            width: 100%;
         }
 
-        .station-label {
-            font-size: clamp(0.8rem, 3vw, 1rem);
-            letter-spacing: 0.3em;
-            color: var(--electric-yellow);
-            margin-bottom: 0.5rem;
-            text-shadow: 0 0 10px rgba(255, 237, 78, 0.8);
+        .logo-text {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 72px;
+            letter-spacing: 12px;
+            color: #b40000;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+            margin-bottom: 8px;
+            line-height: 1;
         }
 
-        .wsqk-logo {
-            width: 100%;
-            max-width: 500px;
-            height: auto;
-            filter: drop-shadow(0 0 20px rgba(255, 0, 51, 0.6));
-            margin: 1rem 0;
+        .tagline {
+            font-family: 'Special Elite', monospace;
+            font-size: 16px;
+            letter-spacing: 4px;
+            color: #666;
+            margin-bottom: 4px;
         }
 
-        .squawk-text {
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
-            font-style: italic;
-            color: white;
-            text-shadow: 
-                2px 2px 0 var(--neon-red),
-                0 0 20px rgba(255, 0, 51, 0.8);
-            margin-top: 0.5rem;
+        .location {
+            font-size: 11px;
+            color: #444;
+            letter-spacing: 2px;
         }
 
-        /* Player card */
-        .player-card {
-            background: rgba(10, 22, 40, 0.85);
-            border: 3px solid var(--neon-red);
-            border-radius: 20px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 100%;
-            margin: 0 auto;
-            box-shadow: 
-                0 0 30px rgba(255, 0, 51, 0.4),
-                inset 0 0 30px rgba(0, 212, 255, 0.1);
+        /* Player Section */
+        .player-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .status-bar {
+            background: rgba(20, 0, 0, 0.4);
+            border: 1px solid rgba(180, 0, 0, 0.2);
+            padding: 12px 20px;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .status-text {
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: #b40000;
+            font-family: 'Bebas Neue', sans-serif;
+        }
+
+        /* Now Playing Card */
+        .now-playing-card {
+            background: rgba(10, 0, 0, 0.6);
+            border: 1px solid rgba(180, 0, 0, 0.3);
+            padding: 40px 30px;
+            border-radius: 8px;
             backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
         }
 
-        .player-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(0, 212, 255, 0.03) 10px,
-                rgba(0, 212, 255, 0.03) 20px
-            );
-            animation: scanlines 10s linear infinite;
+        .np-header {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 14px;
+            letter-spacing: 3px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        @keyframes scanlines {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(50px); }
-        }
-
-        /* Vinyl record animation */
+        /* Vinyl Animation */
         .vinyl-container {
+            position: relative;
             width: 200px;
             height: 200px;
-            margin: 0 auto 2rem;
-            position: relative;
+            margin: 0 auto 30px;
         }
 
         .vinyl {
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: 
-                radial-gradient(circle at center, #1a1a1a 0%, #1a1a1a 25%, #0a0a0a 25%, #0a0a0a 100%);
+            background: radial-gradient(circle at 30% 30%, #1a1a1a 0%, #000 100%);
+            border: 8px solid #0a0a0a;
             position: relative;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-            transition: transform 0.3s ease;
         }
 
         .vinyl::before {
@@ -209,13 +200,11 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            background: var(--neon-red);
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #b40000 0%, #5a0000 100%);
             border-radius: 50%;
-            box-shadow: 
-                0 0 20px var(--neon-red),
-                inset 0 0 10px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
         .vinyl::after {
@@ -224,10 +213,27 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 10px;
-            height: 10px;
-            background: var(--darker-blue);
+            width: 15px;
+            height: 15px;
+            background: #000;
             border-radius: 50%;
+        }
+
+        .vinyl-grooves {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle, transparent 25px, rgba(255,255,255,0.03) 25px, transparent 26px),
+                radial-gradient(circle, transparent 35px, rgba(255,255,255,0.03) 35px, transparent 36px),
+                radial-gradient(circle, transparent 45px, rgba(255,255,255,0.03) 45px, transparent 46px),
+                radial-gradient(circle, transparent 55px, rgba(255,255,255,0.03) 55px, transparent 56px),
+                radial-gradient(circle, transparent 65px, rgba(255,255,255,0.03) 65px, transparent 66px),
+                radial-gradient(circle, transparent 75px, rgba(255,255,255,0.03) 75px, transparent 76px);
         }
 
         .vinyl.spinning {
@@ -239,725 +245,551 @@
             to { transform: rotate(360deg); }
         }
 
-        .vinyl-grooves {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            height: 90%;
-            border-radius: 50%;
-            background: repeating-radial-gradient(
-                circle at center,
-                transparent,
-                transparent 4px,
-                rgba(255, 255, 255, 0.1) 4px,
-                rgba(255, 255, 255, 0.1) 5px
-            );
+        .track-info {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .track-title {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 8px;
+            font-family: 'Special Elite', monospace;
+        }
+
+        .track-artist {
+            font-size: 13px;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        /* Audio Visualizer */
+        .visualizer {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 6px;
+            height: 80px;
+            margin: 30px 0;
+        }
+
+        .vis-bar {
+            width: 8px;
+            background: linear-gradient(to top, #5a0000, #b40000);
+            border-radius: 2px;
+            height: 20%;
+            transition: height 0.15s ease;
+        }
+
+        .vis-bar.active {
+            animation: bounce 1.2s ease-in-out infinite;
+        }
+
+        .vis-bar:nth-child(1).active { animation-delay: 0s; }
+        .vis-bar:nth-child(2).active { animation-delay: 0.1s; }
+        .vis-bar:nth-child(3).active { animation-delay: 0.2s; }
+        .vis-bar:nth-child(4).active { animation-delay: 0.3s; }
+        .vis-bar:nth-child(5).active { animation-delay: 0.4s; }
+        .vis-bar:nth-child(6).active { animation-delay: 0.3s; }
+        .vis-bar:nth-child(7).active { animation-delay: 0.2s; }
+        .vis-bar:nth-child(8).active { animation-delay: 0.1s; }
+
+        @keyframes bounce {
+            0%, 100% { height: 20%; }
+            25% { height: 60%; }
+            50% { height: 100%; }
+            75% { height: 40%; }
         }
 
         /* Controls */
         .controls {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            gap: 25px;
             align-items: center;
-            gap: 2rem;
-            margin: 2rem 0;
-            position: relative;
-            z-index: 1;
+            margin-top: 20px;
         }
 
-        .play-button {
+        .play-btn {
             width: 100px;
             height: 100px;
-            border: 4px solid var(--neon-red);
-            background: var(--darker-blue);
             border-radius: 50%;
-            color: var(--neon-red);
-            font-size: 2.5rem;
+            background: #b40000;
+            border: 3px solid rgba(180, 0, 0, 0.4);
             cursor: pointer;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 
-                0 0 20px rgba(255, 0, 51, 0.4),
-                inset 0 0 20px rgba(0, 0, 0, 0.5);
-            position: relative;
-            overflow: hidden;
+            transition: transform 0.2s ease, background 0.2s ease;
+            box-shadow: 0 8px 30px rgba(180, 0, 0, 0.3);
         }
 
-        .play-button:hover {
-            transform: scale(1.05);
-            box-shadow: 
-                0 0 40px rgba(255, 0, 51, 0.8),
-                inset 0 0 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .play-button:active {
+        .play-btn:active {
             transform: scale(0.95);
         }
 
-        .play-button.playing {
-            background: var(--neon-red);
-            color: var(--darker-blue);
-            box-shadow: 
-                0 0 40px rgba(255, 0, 51, 0.9),
-                0 0 60px rgba(255, 0, 51, 0.6);
-            animation: pulse 2s ease-in-out infinite;
+        .play-btn:hover {
+            background: #c40000;
         }
 
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 40px rgba(255, 0, 51, 0.9), 0 0 60px rgba(255, 0, 51, 0.6); }
-            50% { box-shadow: 0 0 60px rgba(255, 0, 51, 1), 0 0 80px rgba(255, 0, 51, 0.8); }
+        .play-icon {
+            width: 0;
+            height: 0;
+            border-left: 28px solid #fff;
+            border-top: 18px solid transparent;
+            border-bottom: 18px solid transparent;
+            margin-left: 6px;
         }
 
-        /* Volume control */
-        .volume-section {
+        .pause-icon {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin: 1.5rem 0;
-            position: relative;
-            z-index: 1;
+            gap: 10px;
         }
 
-        .volume-icon {
-            font-size: 1.5rem;
-            filter: drop-shadow(0 0 5px var(--neon-blue));
+        .pause-bar {
+            width: 8px;
+            height: 35px;
+            background: #fff;
+            border-radius: 2px;
+        }
+
+        /* Volume */
+        .volume-section {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .volume-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 12px;
         }
 
         .volume-slider {
-            width: 200px;
-            height: 8px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: rgba(255, 255, 255, 0.2);
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
             outline: none;
-            border-radius: 4px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            -webkit-appearance: none;
         }
 
         .volume-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            background: var(--neon-red);
-            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            background: #b40000;
             border-radius: 50%;
-            box-shadow: 
-                0 0 15px var(--neon-red),
-                0 0 30px rgba(255, 0, 51, 0.5);
-            border: 2px solid var(--darker-blue);
+            cursor: pointer;
         }
 
         .volume-slider::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            background: var(--neon-red);
+            width: 18px;
+            height: 18px;
+            background: #b40000;
+            border-radius: 50%;
             cursor: pointer;
-            border-radius: 50%;
-            border: 2px solid var(--darker-blue);
-            box-shadow: 
-                0 0 15px var(--neon-red),
-                0 0 30px rgba(255, 0, 51, 0.5);
+            border: none;
         }
 
-        /* Status */
-        .status {
+        /* Sponsors */
+        .sponsors-section {
+            padding: 40px 20px 60px;
+        }
+
+        .sponsors-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: #444;
             text-align: center;
-            font-size: 1.1rem;
-            color: var(--electric-yellow);
-            text-shadow: 0 0 10px rgba(255, 237, 78, 0.6);
-            min-height: 2rem;
-            letter-spacing: 0.15em;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 30px;
         }
 
-        /* Loading effect */
-        .status-loading {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--electric-yellow);
-            border-radius: 50%;
-            margin-left: 0.5rem;
-            animation: blink 1s infinite;
-            box-shadow: 0 0 10px var(--electric-yellow);
+        .sponsors-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        .sponsor {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px 10px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
 
-        /* Error/Offline pages */
-        .error-page, .offline-page {
+        .sponsor:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(180, 0, 0, 0.3);
+        }
+
+        .sponsor svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Error */
+        .error-box {
+            background: rgba(180, 0, 0, 0.1);
+            border: 1px solid rgba(180, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            margin: 20px 0;
             display: none;
+        }
+
+        .error-box.show {
+            display: block;
+        }
+
+        .error-text {
+            font-size: 12px;
+            color: #ff6666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .retry-btn {
+            background: #b40000;
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+
+        .retry-btn:hover {
+            background: #c40000;
+        }
+
+        .retry-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Offline banner */
+        .offline-banner {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 100;
-            background: var(--darker-blue);
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
+            right: 0;
+            background: rgba(180, 0, 0, 0.95);
+            color: #fff;
             text-align: center;
-        }
-
-        .error-page.active, .offline-page.active {
-            display: flex;
-        }
-
-        .error-icon {
-            font-size: 5rem;
-            margin-bottom: 2rem;
-            filter: drop-shadow(0 0 20px var(--neon-red));
-            animation: flicker 2s infinite;
-        }
-
-        @keyframes flicker {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .error-title {
-            font-size: clamp(2rem, 6vw, 3rem);
-            color: var(--neon-red);
-            margin-bottom: 1rem;
-            text-shadow: 0 0 20px rgba(255, 0, 51, 0.8);
-        }
-
-        .error-message {
-            font-size: clamp(1rem, 3vw, 1.3rem);
-            color: white;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        .retry-button {
-            background: var(--neon-red);
-            color: white;
-            border: none;
-            padding: 1rem 3rem;
-            font-size: 1.5rem;
+            padding: 12px;
             font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 0.1em;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 30px rgba(255, 0, 51, 0.6);
-        }
-
-        .retry-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 50px rgba(255, 0, 51, 0.9);
-        }
-
-        .retry-button:active {
-            transform: scale(0.95);
-        }
-
-        /* Install prompt */
-        .install-prompt {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--neon-red);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 15px;
-            display: none;
-            align-items: center;
-            gap: 1rem;
-            box-shadow: 0 10px 40px rgba(255, 0, 51, 0.6);
+            font-size: 12px;
+            letter-spacing: 2px;
             z-index: 1000;
-            max-width: 90%;
-            font-size: 1rem;
+            display: none;
         }
 
-        .install-prompt.show {
-            display: flex;
-            animation: slideUp 0.5s ease;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
-            to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-
-        .install-button, .dismiss-button {
-            background: white;
-            color: var(--neon-red);
-            border: none;
-            padding: 0.5rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1rem;
-            letter-spacing: 0.1em;
-            transition: all 0.2s ease;
-        }
-
-        .install-button:hover, .dismiss-button:hover {
-            transform: scale(1.05);
-        }
-
-        .dismiss-button {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
-        }
-
-        /* Mobile optimization */
-        @media (max-width: 600px) {
-            .app-container {
-                padding: 0.5rem;
-            }
-
-            .player-card {
-                padding: 1.5rem;
-                margin-top: 1rem;
-            }
-
-            .vinyl-container {
-                width: 150px;
-                height: 150px;
-            }
-
-            .play-button {
-                width: 80px;
-                height: 80px;
-                font-size: 2rem;
-            }
-
-            .controls {
-                gap: 1rem;
-            }
-
-            .volume-slider {
-                width: 150px;
-            }
-
-            .install-prompt {
-                flex-direction: column;
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-height: 700px) {
-            .logo-section {
-                margin: 1rem auto;
-            }
-
-            .vinyl-container {
-                width: 120px;
-                height: 120px;
-                margin-bottom: 1rem;
-            }
-
-            .controls {
-                margin: 1rem 0;
-            }
+        .offline-banner.show {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <!-- Animated background -->
-    <div class="retro-grid">
-        <div class="grid-lines"></div>
-    </div>
-
-    <!-- Particles -->
+    <!-- Background layers -->
+    <div class="bg-layer"></div>
+    <div class="scanlines"></div>
     <div class="particles" id="particles"></div>
 
-    <!-- Main App -->
-    <div class="app-container" id="mainApp">
-        <!-- Logo -->
-        <div class="logo-section">
-            <div class="station-label">A STRANGER THINGS RADIO STATION</div>
-            <svg class="wsqk-logo" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
-                <!-- Background stripes -->
-                <rect width="800" height="300" fill="#0a1628"/>
-                <rect y="60" width="800" height="8" fill="#ffed4e"/>
-                <rect y="75" width="800" height="8" fill="white"/>
-                <rect y="220" width="800" height="8" fill="white"/>
-                <rect y="235" width="800" height="8" fill="#ffed4e"/>
-                
-                <!-- WSQK text with 80s style -->
-                <defs>
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                        <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                    </filter>
-                </defs>
-                
-                <text x="400" y="170" font-family="Arial Black, sans-serif" font-size="140" font-weight="900" fill="#ff0033" text-anchor="middle" filter="url(#glow)" stroke="#1a0000" stroke-width="4">WSQK</text>
-            </svg>
-            <div class="squawk-text">The Squawk</div>
+    <!-- Offline banner -->
+    <div class="offline-banner" id="offlineBanner">NO CONNECTION</div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-text">WSQK</div>
+            <div class="tagline">THE SQUAWK</div>
+            <div class="location">Hawkins, Indiana</div>
         </div>
 
         <!-- Player -->
-        <div class="player-card">
-            <!-- Vinyl record -->
-            <div class="vinyl-container">
-                <div class="vinyl" id="vinyl">
-                    <div class="vinyl-grooves"></div>
+        <div class="player-section">
+            <!-- Status -->
+            <div class="status-bar">
+                <div class="status-text" id="status">READY</div>
+            </div>
+
+            <!-- Now Playing -->
+            <div class="now-playing-card">
+                <div class="np-header">NOW PLAYING</div>
+                
+                <!-- Vinyl -->
+                <div class="vinyl-container">
+                    <div class="vinyl" id="vinyl">
+                        <div class="vinyl-grooves"></div>
+                    </div>
+                </div>
+
+                <!-- Track Info -->
+                <div class="track-info">
+                    <div class="track-title" id="trackTitle">Press Play to Tune In</div>
+                    <div class="track-artist" id="trackArtist">WSQK Radio</div>
+                </div>
+
+                <!-- Visualizer -->
+                <div class="visualizer">
+                    <div class="vis-bar"></div>
+                    <div class="vis-bar"></div>
+                    <div class="vis-bar"></div>
+                    <div class="vis-bar"></div>
+                    <div class="vis-bar"></div>
+                    <div class="vis-bar"></div>
+                    <div class="vis-bar"></div>
+                    <div class="vis-bar"></div>
+                </div>
+
+                <!-- Error -->
+                <div class="error-box" id="errorBox">
+                    <div class="error-text" id="errorText"></div>
+                    <button class="retry-btn" id="retryBtn">RETRY</button>
+                </div>
+
+                <!-- Controls -->
+                <div class="controls">
+                    <button class="play-btn" id="playBtn" aria-label="Play/Pause">
+                        <div class="play-icon" id="playIcon"></div>
+                    </button>
+
+                    <div class="volume-section">
+                        <div class="volume-label">VOLUME</div>
+                        <input type="range" min="0" max="100" value="70" class="volume-slider" id="volumeSlider">
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Controls -->
-            <div class="controls">
-                <button class="play-button" id="playButton" aria-label="Play/Pause">
-                    <span id="playIcon">▶</span>
-                </button>
+        <!-- Sponsors -->
+        <div class="sponsors-section">
+            <div class="sponsors-title">SPONSORED BY</div>
+            <div class="sponsors-grid">
+                <div class="sponsor">
+                    <svg viewBox="0 0 100 80" width="80">
+                        <text x="50" y="30" text-anchor="middle" font-family="Arial Black" font-size="14" fill="#003d82" font-weight="bold">SCOOPS</text>
+                        <text x="50" y="50" text-anchor="middle" font-family="Arial Black" font-size="14" fill="#003d82" font-weight="bold">AHOY</text>
+                    </svg>
+                </div>
+                <div class="sponsor">
+                    <svg viewBox="0 0 120 40" width="90">
+                        <text x="60" y="28" text-anchor="middle" font-family="Arial Black" font-size="13" fill="#ff3333" font-weight="bold">RadioShack</text>
+                    </svg>
+                </div>
+                <div class="sponsor">
+                    <svg viewBox="0 0 100 60" width="80">
+                        <text x="50" y="25" text-anchor="middle" font-family="Arial Black" font-size="11" fill="#8b4789" font-weight="bold">PALACE</text>
+                        <text x="50" y="42" text-anchor="middle" font-family="Arial Black" font-size="11" fill="#ff6b6b" font-weight="bold">ARCADE</text>
+                    </svg>
+                </div>
             </div>
-
-            <!-- Volume -->
-            <div class="volume-section">
-                <span class="volume-icon">🔊</span>
-                <input type="range" min="0" max="100" value="70" class="volume-slider" id="volumeSlider" aria-label="Volume">
-            </div>
-
-            <!-- Status -->
-            <div class="status" id="status">READY TO TRANSMIT</div>
         </div>
     </div>
 
-    <!-- Error Page -->
-    <div class="error-page" id="errorPage">
-        <div class="error-icon">📻</div>
-        <h1 class="error-title">TRANSMISSION LOST</h1>
-        <p class="error-message">Cannot connect to the station.<br>Check your connection and try again.</p>
-        <button class="retry-button" onclick="retryConnection()">RETRY</button>
-    </div>
+    <!-- Audio -->
+    <audio id="audio" preload="none"></audio>
 
-    <!-- Offline Page -->
-    <div class="offline-page" id="offlinePage">
-        <div class="error-icon">📡</div>
-        <h1 class="error-title">NO SIGNAL</h1>
-        <p class="error-message">You're offline.<br>Connect to the internet to tune in.</p>
-        <button class="retry-button" onclick="checkConnection()">CHECK CONNECTION</button>
-    </div>
-
-    <!-- Install Prompt -->
-    <div class="install-prompt" id="installPrompt">
-        <span>Install WSQK on your device?</span>
-        <button class="install-button" id="installButton">INSTALL</button>
-        <button class="dismiss-button" id="dismissButton">LATER</button>
-    </div>
+    <!-- Manifest -->
+    <link rel="manifest" id="manifest">
 
     <script>
-        // Generate manifest
-        const manifestData = {
-            name: "WSQK The Squawk",
-            short_name: "WSQK",
-            description: "A Stranger Things Radio Station",
-            start_url: "./",
-            display: "standalone",
-            background_color: "#0a1628",
-            theme_color: "#0a1628",
-            orientation: "portrait",
-            icons: [
-                {
-                    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%230a1628'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial Black' font-size='48' fill='%23ff0000' dominant-baseline='middle' text-anchor='middle' font-weight='bold'%3EWSQK%3C/text%3E%3C/svg%3E",
-                    sizes: "192x192",
-                    type: "image/svg+xml",
-                    purpose: "any maskable"
-                },
-                {
-                    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230a1628'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial Black' font-size='140' fill='%23ff0000' dominant-baseline='middle' text-anchor='middle' font-weight='bold'%3EWSQK%3C/text%3E%3C/svg%3E",
-                    sizes: "512x512",
-                    type: "image/svg+xml",
-                    purpose: "any maskable"
-                }
-            ]
-        };
-
-        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-        const manifestURL = URL.createObjectURL(manifestBlob);
-        document.getElementById('manifest-placeholder').setAttribute('href', manifestURL);
-
-        // Constants
-        const STREAM_URL = 'https://media-ssl.musicradio.com/WSQK';
-        
-        // Elements
-        const playButton = document.getElementById('playButton');
-        const playIcon = document.getElementById('playIcon');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const status = document.getElementById('status');
-        const vinyl = document.getElementById('vinyl');
-        const mainApp = document.getElementById('mainApp');
-        const errorPage = document.getElementById('errorPage');
-        const offlinePage = document.getElementById('offlinePage');
-        const installPrompt = document.getElementById('installPrompt');
-        const installButton = document.getElementById('installButton');
-        const dismissButton = document.getElementById('dismissButton');
+        // Particles
         const particles = document.getElementById('particles');
-
-        // Audio
-        let audio = null;
-        let isPlaying = false;
-        let deferredPrompt = null;
-
-        // Initialize
-        function init() {
-            createParticles();
-            setupAudio();
-            setupEventListeners();
-            checkOnlineStatus();
+        for (let i = 0; i < 25; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.animationDelay = Math.random() * 25 + 's';
+            p.style.animationDuration = (20 + Math.random() * 10) + 's';
+            particles.appendChild(p);
         }
 
-        // Create floating particles
-        function createParticles() {
-            for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
-                particles.appendChild(particle);
+        // Elements
+        const audio = document.getElementById('audio');
+        const playBtn = document.getElementById('playBtn');
+        const playIcon = document.getElementById('playIcon');
+        const vinyl = document.getElementById('vinyl');
+        const status = document.getElementById('status');
+        const trackTitle = document.getElementById('trackTitle');
+        const trackArtist = document.getElementById('trackArtist');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const visBars = document.querySelectorAll('.vis-bar');
+        const errorBox = document.getElementById('errorBox');
+        const errorText = document.getElementById('errorText');
+        const retryBtn = document.getElementById('retryBtn');
+        const offlineBanner = document.getElementById('offlineBanner');
+
+        const STREAM_URL = 'https://media-ssl.musicradio.com/WSQK';
+        let isPlaying = false;
+
+        // Set volume
+        audio.volume = volumeSlider.value / 100;
+
+        // Online/Offline
+        window.addEventListener('online', () => offlineBanner.classList.remove('show'));
+        window.addEventListener('offline', () => {
+            offlineBanner.classList.add('show');
+            if (isPlaying) togglePlay();
+        });
+
+        // Play/Pause
+        function togglePlay() {
+            if (isPlaying) {
+                audio.pause();
+                audio.src = '';
+                isPlaying = false;
+                vinyl.classList.remove('spinning');
+                playIcon.className = 'play-icon';
+                playIcon.innerHTML = '';
+                status.textContent = 'PAUSED';
+                trackTitle.textContent = 'Press Play to Tune In';
+                trackArtist.textContent = 'WSQK Radio';
+                visBars.forEach(bar => bar.classList.remove('active'));
+                
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.playbackState = 'paused';
+                }
+            } else {
+                errorBox.classList.remove('show');
+                status.textContent = 'CONNECTING...';
+                
+                // Critical: Set source with correct type
+                const source = document.createElement('source');
+                source.src = STREAM_URL;
+                source.type = 'audio/aac';
+                
+                audio.innerHTML = '';
+                audio.appendChild(source);
+                audio.load();
+                
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        console.log('Playback started successfully');
+                        isPlaying = true;
+                        vinyl.classList.add('spinning');
+                        playIcon.className = 'pause-icon';
+                        playIcon.innerHTML = '<div class="pause-bar"></div><div class="pause-bar"></div>';
+                        status.textContent = 'ON AIR';
+                        trackTitle.textContent = 'WSQK Live Stream';
+                        trackArtist.textContent = 'Hawkins, Indiana';
+                        visBars.forEach(bar => bar.classList.add('active'));
+                        
+                        setupMediaSession();
+                    }).catch(error => {
+                        console.error('Play failed:', error);
+                        showError('Could not connect to stream. Check your connection and try again.');
+                        isPlaying = false;
+                    });
+                }
             }
         }
 
-        // Setup audio element
-        function setupAudio() {
-            audio = new Audio();
-            audio.crossOrigin = 'anonymous';
-            audio.preload = 'none';
-            audio.volume = volumeSlider.value / 100;
+        playBtn.addEventListener('click', togglePlay);
+        retryBtn.addEventListener('click', () => {
+            errorBox.classList.remove('show');
+            togglePlay();
+        });
 
-            // Audio events
-            audio.addEventListener('playing', handlePlaying);
-            audio.addEventListener('pause', handlePause);
-            audio.addEventListener('ended', handlePause);
-            audio.addEventListener('error', handleError);
-            audio.addEventListener('waiting', () => {
-                if (isPlaying) {
-                    updateStatus('TUNING IN<span class="status-loading"></span>');
-                }
-            });
-            audio.addEventListener('canplay', () => {
-                if (isPlaying) {
-                    updateStatus('ON AIR');
-                }
-            });
+        // Volume
+        volumeSlider.addEventListener('input', (e) => {
+            audio.volume = e.target.value / 100;
+        });
 
-            // Media Session API
+        // Audio events
+        audio.addEventListener('playing', () => {
+            console.log('Audio playing');
+            status.textContent = 'ON AIR';
+        });
+
+        audio.addEventListener('waiting', () => {
+            console.log('Audio buffering');
+            status.textContent = 'BUFFERING...';
+        });
+
+        audio.addEventListener('error', (e) => {
+            console.error('Audio error:', e);
+            const errorMsg = audio.error ? `Error code: ${audio.error.code}` : 'Stream unavailable';
+            showError(`Connection failed. ${errorMsg}. Please check your internet and try again.`);
+            isPlaying = false;
+            vinyl.classList.remove('spinning');
+            playIcon.className = 'play-icon';
+            playIcon.innerHTML = '';
+            visBars.forEach(bar => bar.classList.remove('active'));
+        });
+
+        audio.addEventListener('stalled', () => {
+            console.log('Audio stalled');
+            status.textContent = 'RECONNECTING...';
+        });
+
+        function showError(msg) {
+            errorText.textContent = msg;
+            errorBox.classList.add('show');
+            status.textContent = 'CONNECTION ERROR';
+        }
+
+        // Media Session
+        function setupMediaSession() {
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: 'WSQK The Squawk',
-                    artist: 'Stranger Things Radio',
-                    album: 'Live Stream',
+                    artist: 'Hawkins, Indiana',
+                    album: 'Live Radio',
                     artwork: [
-                        { 
-                            src: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"%3E%3Crect width="512" height="512" fill="%230a1628"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial Black" font-size="140" fill="%23ff0000" dominant-baseline="middle" text-anchor="middle" font-weight="bold"%3EWSQK%3C/text%3E%3C/svg%3E',
-                            sizes: '512x512',
-                            type: 'image/svg+xml'
-                        }
+                        { src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect fill="%23b40000" width="512" height="512"/><text x="256" y="300" text-anchor="middle" font-family="sans-serif" font-size="120" fill="white" font-weight="bold">WSQK</text></svg>', sizes: '512x512', type: 'image/svg+xml' }
                     ]
                 });
 
-                navigator.mediaSession.setActionHandler('play', () => play());
-                navigator.mediaSession.setActionHandler('pause', () => pause());
-                navigator.mediaSession.setActionHandler('stop', () => pause());
+                navigator.mediaSession.setActionHandler('play', () => {
+                    if (!isPlaying) togglePlay();
+                });
+                navigator.mediaSession.setActionHandler('pause', () => {
+                    if (isPlaying) togglePlay();
+                });
+
+                navigator.mediaSession.playbackState = 'playing';
             }
         }
 
-        // Event listeners
-        function setupEventListeners() {
-            playButton.addEventListener('click', togglePlay);
-            volumeSlider.addEventListener('input', handleVolumeChange);
-            
-            // PWA install
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                setTimeout(() => installPrompt.classList.add('show'), 3000);
-            });
+        // PWA Manifest
+        const manifest = {
+            name: "WSQK The Squawk",
+            short_name: "WSQK",
+            description: "Hawkins Radio Station",
+            start_url: "./",
+            display: "standalone",
+            background_color: "#000000",
+            theme_color: "#0a0a0a",
+            orientation: "portrait",
+            icons: [{
+                src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%23b40000' width='512' height='512'/><text x='256' y='300' text-anchor='middle' font-family='sans-serif' font-size='120' fill='white' font-weight='bold'>WSQK</text></svg>",
+                sizes: "512x512",
+                type: "image/svg+xml",
+                purpose: "any maskable"
+            }]
+        };
 
-            installButton.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    deferredPrompt = null;
-                    installPrompt.classList.remove('show');
-                }
-            });
+        const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+        document.getElementById('manifest').href = URL.createObjectURL(blob);
 
-            dismissButton.addEventListener('click', () => {
-                installPrompt.classList.remove('show');
-            });
-
-            // Online/offline
-            window.addEventListener('online', checkConnection);
-            window.addEventListener('offline', () => {
-                if (isPlaying) {
-                    showOfflinePage();
-                }
-            });
-
-            // Keep playing in background
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden && isPlaying && audio.paused) {
-                    audio.play().catch(err => console.log('Resume failed:', err));
-                }
-            });
-        }
-
-        // Toggle play/pause
-        function togglePlay() {
-            if (isPlaying) {
-                pause();
-            } else {
-                play();
-            }
-        }
-
-        // Play
-        function play() {
-            if (!navigator.onLine) {
-                showOfflinePage();
-                return;
-            }
-
-            // Set source with AAC type
-            if (!audio.src || audio.src !== STREAM_URL) {
-                audio.src = STREAM_URL;
-                audio.type = 'audio/aac';
-            }
-
-            updateStatus('CONNECTING<span class="status-loading"></span>');
-            
-            audio.load();
-            
-            const playPromise = audio.play();
-            
-            if (playPromise !== undefined) {
-                playPromise
-                    .then(() => {
-                        console.log('Playback started');
-                    })
-                    .catch(error => {
-                        console.error('Play failed:', error);
-                        handleError(error);
-                    });
-            }
-        }
-
-        // Pause
-        function pause() {
-            audio.pause();
-            isPlaying = false;
-            playButton.classList.remove('playing');
-            playIcon.textContent = '▶';
-            vinyl.classList.remove('spinning');
-            updateStatus('PAUSED');
-        }
-
-        // Handle playing
-        function handlePlaying() {
-            isPlaying = true;
-            playButton.classList.add('playing');
-            playIcon.textContent = '⏸';
-            vinyl.classList.add('spinning');
-            updateStatus('ON AIR');
-        }
-
-        // Handle pause
-        function handlePause() {
-            isPlaying = false;
-            playButton.classList.remove('playing');
-            playIcon.textContent = '▶';
-            vinyl.classList.remove('spinning');
-        }
-
-        // Handle volume
-        function handleVolumeChange(e) {
-            if (audio) {
-                audio.volume = e.target.value / 100;
-            }
-        }
-
-        // Handle errors
-        function handleError(error) {
-            console.error('Audio error:', error);
-            
-            if (audio.error) {
-                console.log('Error code:', audio.error.code);
-                console.log('Error message:', audio.error.message);
-            }
-            
-            pause();
-            showErrorPage();
-        }
-
-        // Update status
-        function updateStatus(message) {
-            status.innerHTML = message;
-        }
-
-        // Show error page
-        function showErrorPage() {
-            mainApp.style.display = 'none';
-            errorPage.classList.add('active');
-            offlinePage.classList.remove('active');
-        }
-
-        // Show offline page
-        function showOfflinePage() {
-            mainApp.style.display = 'none';
-            offlinePage.classList.add('active');
-            errorPage.classList.remove('active');
-            pause();
-        }
-
-        // Show main app
-        function showMainApp() {
-            mainApp.style.display = 'flex';
-            errorPage.classList.remove('active');
-            offlinePage.classList.remove('active');
-        }
-
-        // Retry connection
-        function retryConnection() {
-            if (!navigator.onLine) {
-                showOfflinePage();
-                return;
-            }
-            showMainApp();
-            updateStatus('READY TO TRANSMIT');
-        }
-
-        // Check connection
-        function checkConnection() {
-            if (navigator.onLine) {
-                showMainApp();
-                updateStatus('BACK ONLINE - READY TO TRANSMIT');
-            } else {
-                showOfflinePage();
-            }
-        }
-
-        // Check online status
-        function checkOnlineStatus() {
-            if (!navigator.onLine) {
-                showOfflinePage();
-            }
-        }
-
-        // Initialize
-        init();
+        console.log('WSQK initialized - Stream type: audio/aac');
     </script>
 </body>
 </html>
